@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,7 +10,7 @@ class Settings(BaseSettings):
     intervals_athlete_id: str = "0"
     intervals_base_url: str = "https://intervals.icu/api/v1"
 
-    # OpenAI
+    # OpenAI-compatible provider (OpenAI, Ollama, LM Studio, etc.)
     openai_api_key: str = ""
     openai_model: str = "gpt-4o"
     openai_base_url: str = ""
@@ -26,6 +27,15 @@ class Settings(BaseSettings):
     sync_interval_minutes: int = 60
     api_host: str = "0.0.0.0"
     api_port: int = 8000
+
+    @model_validator(mode="after")
+    def _strip_urls(self) -> "Settings":
+        """Strip whitespace from URL fields to prevent subtle connection bugs."""
+        if self.openai_base_url:
+            self.openai_base_url = self.openai_base_url.strip()
+        if self.intervals_base_url:
+            self.intervals_base_url = self.intervals_base_url.strip()
+        return self
 
 
 settings = Settings()

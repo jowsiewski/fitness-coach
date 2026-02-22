@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    """Entry point: starts FastAPI server, Discord bot, and scheduler concurrently."""
     asyncio.run(_run())
 
 
@@ -25,6 +24,13 @@ async def _run() -> None:
 
     logger.info("Initializing database...")
     await init_db()
+    ai_provider = settings.openai_base_url or "https://api.openai.com/v1"
+    logger.info(
+        "AI config: model=%s, provider=%s, key_set=%s",
+        settings.openai_model,
+        ai_provider,
+        bool(settings.openai_api_key and settings.openai_api_key != ""),
+    )
 
     app = create_app()
     bot = create_bot()
