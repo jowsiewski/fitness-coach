@@ -43,7 +43,7 @@ class SummaryCog(commands.Cog):
                 await ctx.respond(embed=embed)
                 return
 
-            last_activity = activities[-1]
+            last_activity = activities[0]
 
             analyzer = ActivityAnalyzer()
             analysis = analyzer.analyze(last_activity)
