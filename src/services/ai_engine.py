@@ -58,8 +58,14 @@ class AIEngine:
     """OpenAI-powered analysis engine for cycling training data."""
 
     def __init__(self) -> None:
-        self._client = AsyncOpenAI(api_key=settings.openai_api_key)
+        kwargs: dict[str, Any] = {"api_key": settings.openai_api_key}
+        if settings.openai_base_url:
+            kwargs["base_url"] = settings.openai_base_url
+        self._client = AsyncOpenAI(**kwargs)
         self._model = settings.openai_model
+
+        provider = settings.openai_base_url or "https://api.openai.com/v1"
+        logger.info("AI engine initialized: model=%s, provider=%s", self._model, provider)
 
     async def _chat(self, system_prompt: str, user_content: str) -> str:
         """Send a chat completion request."""
